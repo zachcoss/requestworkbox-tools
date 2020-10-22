@@ -1,13 +1,9 @@
 {
   "name": "@requestworkbox/internal-tools",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "",
   "main": "index.js",
-  "dependencies": {
-    "aws-sdk": "^2.776.0",
-    "mongoose": "^5.10.9",
-    "mongoose-autopopulate": "^0.12.2"
-  },
+  "dependencies": {},
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
