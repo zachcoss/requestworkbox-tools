@@ -1,0 +1,21 @@
+{
+  "name": "@requestworkbox/internal-tools",
+  "version": "1.1.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.776.0",
+    "mongoose": "^5.10.9",
+    "mongoose-autopopulate": "^0.12.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/internal-tools"
+  },
+  "author": "",
+  "license": "ISC"
+}
