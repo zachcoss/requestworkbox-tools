@@ -1,3 +1,4 @@
 module.exports = {
-    io: null
+    api: { io: null },
+    jobs: { io: null },
 }
