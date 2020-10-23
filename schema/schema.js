@@ -1,6 +1,6 @@
 // accepts the mongoose and autopopulate libraries
 // from each instance
-module.exports = (mongoose, mongooseAutoPopulate) => {
+module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
     if (!mongoose || !mongooseAutoPopulate) {
         throw new Error('Missing Required Packages')
     }
@@ -34,6 +34,20 @@ module.exports = (mongoose, mongooseAutoPopulate) => {
         queueType: { type: String, required: true, enum: ['queue', 'schedule', 'return'] },
         date: { type: Date, required: true },
         storage: { type: String  },
+        dev: { type: Boolean, default: false, required: true }
+    }, { timestamps: true })
+
+    const QueueDevSchema = new mongoose.Schema({
+        active: { type: Boolean, default: true, required: true  },
+        sub: { type: String, required: true },
+        instance: { type: Schema.Types.ObjectId, required: true  },
+        workflow: { type: Schema.Types.ObjectId, required: true  },
+        workflowName: { type: String, required: true  },
+        status: { type: String, required: true, enum: ['received', 'queued', 'running', 'complete', 'error'] },
+        queueType: { type: String, required: true, enum: ['queue', 'schedule', 'return'] },
+        date: { type: Date, required: true },
+        storage: { type: String  },
+        dev: { type: Boolean, default: true, required: true }
     }, { timestamps: true })
 
     const BillingSchema = new mongoose.Schema({
@@ -179,7 +193,6 @@ module.exports = (mongoose, mongooseAutoPopulate) => {
     }, { timestamps: true })
 
     return {
-        'Queue': new mongoose.model('Queue', QueueSchema),
         'Usage': new mongoose.model('Usage', UsageSchema),
         'Billing': new mongoose.model('Billing', BillingSchema),
         'Feedback': new mongoose.model('Feedback', FeedbackSchema),
@@ -189,6 +202,16 @@ module.exports = (mongoose, mongooseAutoPopulate) => {
         'Workflow': new mongoose.model('Workflow', WorkflowSchema),
         'Instance': new mongoose.model('Instance', InstanceSchema),
         'Stat': new mongoose.model('Stat', StatSchema),
+
+        'Queue': (() => {
+            if (nodeEnv === 'production') {
+                return new mongoose.model('Queue', QueueSchema)
+            } else if (nodeEnv === 'development') {
+                return new mongoose.model('QueueDev', QueueDevSchema)
+            } else {
+                throw new Error('Missing node env')
+            }
+        })(),
 
         'RequestSchema': RequestSchema,
     }
