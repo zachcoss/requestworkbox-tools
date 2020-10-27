@@ -190,6 +190,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         duration: { type: Number },
         responseSize: { type: Number },
         responseType: { type: String }, 
+        error: { type: Boolean }
     }, { timestamps: true })
 
     return {
