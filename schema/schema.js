@@ -10,6 +10,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
     mongoose.plugin(mongooseAutoPopulate)
 
+    const queueStatusValue = ['received', 'uploading', 'pending', 'queued', 'starting', 'initializing', 'loading', 'running', 'complete', 'error', 'archived']
+
     const KeyValueSchema = new mongoose.Schema({
         key: String,
         value: String,
@@ -30,9 +32,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         instance: { type: Schema.Types.ObjectId, required: true  },
         workflow: { type: Schema.Types.ObjectId, required: true  },
         workflowName: { type: String, required: true  },
-        status: { type: String, required: true, enum: ['received', 'queued', 'running', 'complete', 'error', 'archived'] },
-        queueType: { type: String, required: true, enum: ['queue', 'schedule', 'return'] },
-        date: { type: Date, required: true },
+        status: { type: String, enum: queueStatusValue },
+        queueType: { type: String, enum: ['queue', 'schedule', 'return'] },
+        date: { type: Date, },
         storage: { type: String  },
         dev: { type: Boolean, default: false, required: true },
         stats: [{
@@ -48,9 +50,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         instance: { type: Schema.Types.ObjectId, required: true  },
         workflow: { type: Schema.Types.ObjectId, required: true  },
         workflowName: { type: String, required: true  },
-        status: { type: String, required: true, enum: ['received', 'queued', 'running', 'complete', 'error', 'archived'] },
-        queueType: { type: String, required: true, enum: ['queue', 'schedule', 'return'] },
-        date: { type: Date, required: true },
+        status: { type: String, enum: queueStatusValue },
+        queueType: { type: String, enum: ['queue', 'schedule', 'return'] },
+        date: { type: Date, },
         storage: { type: String  },
         dev: { type: Boolean, default: true, required: true },
         stats: [{
@@ -205,12 +207,13 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
     const QueueStatSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
+        sub: { type: String, required: true },
         instance: {
             type: Schema.Types.ObjectId,
             required: true,
             ref: 'Instance',
         },
-        status: { type: String },
+        status: { type: String, enum: queueStatusValue },
         statusText: { type: String },
         error: { type: Boolean }
     }, { timestamps: true })
