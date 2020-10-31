@@ -34,7 +34,12 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         queueType: { type: String, required: true, enum: ['queue', 'schedule', 'return'] },
         date: { type: Date, required: true },
         storage: { type: String  },
-        dev: { type: Boolean, default: false, required: true }
+        dev: { type: Boolean, default: false, required: true },
+        stats: [{
+            type: Schema.Types.ObjectId,
+            ref: 'QueueStat',
+            autopopulate: true
+        }],
     }, { timestamps: true })
 
     const QueueDevSchema = new mongoose.Schema({
@@ -47,7 +52,12 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         queueType: { type: String, required: true, enum: ['queue', 'schedule', 'return'] },
         date: { type: Date, required: true },
         storage: { type: String  },
-        dev: { type: Boolean, default: true, required: true }
+        dev: { type: Boolean, default: true, required: true },
+        stats: [{
+            type: Schema.Types.ObjectId,
+            ref: 'QueueStat',
+            autopopulate: true
+        }],
     }, { timestamps: true })
 
     const BillingSchema = new mongoose.Schema({
@@ -193,6 +203,18 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         error: { type: Boolean }
     }, { timestamps: true })
 
+    const QueueStatSchema = new mongoose.Schema({
+        active: { type: Boolean, default: true },
+        instance: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: 'Instance',
+        },
+        status: { type: String },
+        statusText: { type: String },
+        error: { type: Boolean }
+    }, { timestamps: true })
+
     return {
         'Usage': new mongoose.model('Usage', UsageSchema),
         'Billing': new mongoose.model('Billing', BillingSchema),
@@ -203,6 +225,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         'Workflow': new mongoose.model('Workflow', WorkflowSchema),
         'Instance': new mongoose.model('Instance', InstanceSchema),
         'Stat': new mongoose.model('Stat', StatSchema),
+        'QueueStat': new mongoose.model('QueueStat', QueueStatSchema),
 
         'Queue': (() => {
             if (nodeEnv === 'production') {
