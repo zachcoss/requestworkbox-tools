@@ -213,6 +213,11 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             required: true,
             ref: 'Instance',
         },
+        queue: {
+            type: Schema.Types.ObjectId,
+            required: true,
+            ref: 'Queue',
+        },
         status: { type: String, enum: queueStatusValue },
         statusText: { type: String },
         error: { type: Boolean }
