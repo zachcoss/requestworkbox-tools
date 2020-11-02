@@ -10,7 +10,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
     mongoose.plugin(mongooseAutoPopulate)
 
-    const queueStatusValue = ['received', 'uploading', 'pending', 'queued', 'starting', 'initializing', 'loading', 'running', 'complete', 'error', 'archived']
+    const queueStatusValue = ['received', 'uploading', 'pending', 'queued', 'starting', 'initializing', 'loading', 'running', 'webhook', 'complete', 'error', 'archived']
 
     const KeyValueSchema = new mongoose.Schema({
         key: String,
@@ -126,9 +126,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             ref: 'Project',
         },
         url: {
-            method: {type: String, default: 'GET'},
-            url: {type: String, default: 'https://api.com'},
-            name: {type: String, default: 'API'},
+            method: { type: String, default: 'GET'},
+            url: { type: String, default: 'https://api.com'},
+            name: { type: String, default: 'API'},
         },
         query: {
             type: [ KeyValueSchema ],
@@ -160,6 +160,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             })],
             default: [{}],
         },
+        webhookRequestId: { type: Schema.Types.ObjectId, },
     }, { timestamps: true })
 
     const InstanceSchema = new mongoose.Schema({
