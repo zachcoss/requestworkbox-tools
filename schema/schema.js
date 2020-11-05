@@ -80,10 +80,13 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
     const UsageSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
-        usageType: { type: String, enum: ['storage', 'request', ] },
+        usageType: { type: String, enum: ['storage', 'request', 'webhook'] },
         usageDirection: { type: String, enum: ['up', 'down', 'time'] },
         usageAmount: { type: Number },
-        usageLocation: { type: String, enum: ['api', 'instance', 'queue'] }
+        usageLocation: { type: String, enum: ['api', 'instance', 'queue'] },
+        usageMeasurement: { type: String, enum: ['kb', 'ms'] },
+        usageId: { type: Schema.Types.ObjectId, },
+        usageDetail: { type: String },
     }, { timestamps: true })
 
     const FeedbackSchema = new mongoose.Schema({
@@ -109,6 +112,12 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         mimetype: { type: String, },
         filename: { type: String, },
         size: { type: Number, },
+        usage: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Usage',
+            autopopulate: true
+        }],
+        storageValue: Schema.Types.Mixed,
     }, { timestamps: true })
 
     const ProjectSchema = new mongoose.Schema({
@@ -181,7 +190,12 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             type: Schema.Types.ObjectId,
             ref: 'Stat',
             autopopulate: true
-        }]
+        }],
+        usage: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Usage',
+            autopopulate: true
+        }],
     }, { timestamps: true })
 
     const StatSchema = new mongoose.Schema({

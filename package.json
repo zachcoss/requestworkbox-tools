@@ -1,6 +1,6 @@
 {
   "name": "@requestworkbox/internal-tools",
-  "version": "2.0.15",
+  "version": "2.0.19",
   "description": "",
   "main": "index.js",
   "dependencies": {

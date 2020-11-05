@@ -96,5 +96,43 @@ const
                     Body: JSON.stringify(statBackup)
                 }).promise()
             },
+            updateInstanceUsage: async function(payload, IndexSchema) {
+                const { instance, usages } = payload
+
+                // Batch Create Usage
+                const bulkUsages = _.map(usages, (usage) => {
+                    const usageStat = new IndexSchema.Usage(usage)
+                    return usageStat
+                })
+
+                // Insert many queue stat
+                const insertMany = await IndexSchema.Usage.insertMany(bulkUsages)
+
+                // Add to Instance
+                _.each(insertMany, (usage) => {
+                    instance.usage.push(usage._id)
+                })
+                
+                await instance.save()
+            },
+            updateStorageUsage: async function(payload, IndexSchema) {
+                const { storage, usages } = payload
+
+                // Batch Create Usage
+                const bulkUsages = _.map(usages, (usage) => {
+                    const usageStat = new IndexSchema.Usage(usage)
+                    return usageStat
+                })
+
+                // Insert many queue stat
+                const insertMany = await IndexSchema.Usage.insertMany(bulkUsages)
+
+                // Add to Storage
+                _.each(insertMany, (usage) => {
+                    storage.usage.push(usage._id)
+                })
+                
+                await storage.save()
+            },
         }
     }
