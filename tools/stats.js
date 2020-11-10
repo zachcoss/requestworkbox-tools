@@ -1,6 +1,22 @@
 const
     _ = require('lodash');
 
+    function updateUsageAndTotals(assetDoc, usageDoc) {
+        // Update usage
+        assetDoc.usage.push(usageDoc._id)
+
+        // Recalculate totals
+        if (usageDoc.usageMeasurement === 'byte') {
+            if (usageDoc.usageDirection === 'up') {
+                assetDoc.totalBytesUp = (assetDoc.totalBytesUp || 0) + usageDoc.usageAmount
+            } else if (usageDoc.usageDirection === 'down') {
+                assetDoc.totalBytesDown = (assetDoc.totalBytesDown || 0) + usageDoc.usageAmount
+            }
+        } else if (usageDoc.usageMeasurement === 'ms') {
+            assetDoc.totalMs = (assetDoc.totalMs || 0) + usageDoc.usageAmount
+        }
+    }
+
     module.exports.init = function() {
         return {
             updateQueueStats: async function(payload, IndexSchema, socketService) {
@@ -110,7 +126,7 @@ const
 
                 // Add to Instance
                 _.each(insertMany, (usage) => {
-                    instance.usage.push(usage._id)
+                    updateUsageAndTotals(instance, usage)
                 })
                 
                 await instance.save()
@@ -129,7 +145,7 @@ const
 
                 // Add to Storage
                 _.each(insertMany, (usage) => {
-                    storage.usage.push(usage._id)
+                    updateUsageAndTotals(storage, usage)
                 })
                 
                 await storage.save()

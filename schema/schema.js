@@ -84,7 +84,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         usageDirection: { type: String, enum: ['up', 'down', 'time'] },
         usageAmount: { type: Number },
         usageLocation: { type: String, enum: ['api', 'instance', 'queue'] },
-        usageMeasurement: { type: String, enum: ['kb', 'ms'] },
+        usageMeasurement: { type: String, enum: ['byte', 'ms'] },
         usageId: { type: Schema.Types.ObjectId, },
         usageDetail: { type: String },
     }, { timestamps: true })
@@ -118,6 +118,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             autopopulate: true
         }],
         storageValue: Schema.Types.Mixed,
+        totalBytesDown: { type: Number },
+        totalBytesUp: { type: Number },
+        totalMs: { type: Number },
     }, { timestamps: true })
 
     const ProjectSchema = new mongoose.Schema({
@@ -196,6 +199,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             ref: 'Usage',
             autopopulate: true
         }],
+        totalBytesDown: { type: Number },
+        totalBytesUp: { type: Number },
+        totalMs: { type: Number },
     }, { timestamps: true })
 
     const StatSchema = new mongoose.Schema({
