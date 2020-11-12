@@ -75,6 +75,32 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         // schedule workflow
         scheduleWorkflowLast: { type: Date },
         scheduleWorkflowCount: { type: Number },
+
+        stripeCustomerId: { type: String },
+    }, { timestamps: true })
+
+    const ChargeSchema = new mongoose.Schema({
+        active: { type: Boolean, default: true },
+        sub: { type: String, required: true },
+        status: { type: String, enum: ['ready','calculating','error'] },
+        invoiceMonth: { type: String, enum: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] },
+        invoiceYear: { type: String, enum: ['2020','2021'] },
+        invoiceType: { type: String, enum: ['storage','request','app','api'] },
+        invoiceFrequency: { type: String, enum: ['monthly'] },
+        invoiceAmount: { type: String },
+        invoiceMeasurement: { type: String, enum: ['kb','ms','cent',] },
+        invoiceDetail: { type: String, },
+        invoiceId: { type: String, },
+        invoiceLastCalculated: { type: Date, },
+    }, { timestamps: true })
+
+    const InvoiceSchema = new mongoose.Schema({
+        active: { type: Boolean, default: true },
+        sub: { type: String, required: true },
+        status: { type: String, enum: ['ready','calculating','error'] },
+        charges: {
+            type: [ ChargeSchema ],
+        },
     }, { timestamps: true })
 
     const UsageSchema = new mongoose.Schema({
