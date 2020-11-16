@@ -106,7 +106,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
     const UsageSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
-        usageType: { type: String, enum: ['storage', 'request', 'webhook'] },
+        usageType: { type: String, enum: ['storage', 'request', 'webhook', 'stat',] },
         usageDirection: { type: String, enum: ['up', 'down', 'time'] },
         usageAmount: { type: Number },
         usageLocation: { type: String, enum: ['api', 'instance', 'queue'] },
@@ -247,6 +247,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         startTime: { type: Date },
         endTime: { type: Date },
         duration: { type: Number },
+        requestSize: { type: Number },
         responseSize: { type: Number },
         responseType: { type: String }, 
         error: { type: Boolean }

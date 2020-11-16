@@ -93,7 +93,7 @@ const
                 })
             },
             updateInstanceStats: async function(payload, IndexSchema, S3) {
-                const { instance, statConfig, err } = payload
+                const { instance, statConfig, } = payload
     
                 // Create Instance Stat
                 const omittedStat = _.omit(statConfig, ['requestPayload','responsePayload', 'headers'])
