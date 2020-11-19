@@ -79,6 +79,15 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         stripeCustomerId: { type: String },
     }, { timestamps: true })
 
+    const SettingSchema = new mongoose.Schema({
+        active: { type: Boolean, default: true },
+        sub: { type: String, required: true },
+        emailPromotions: { type: Boolean, default: true, },
+        emailProducts: { type: Boolean, default: true, },
+        emailSystemUpdates: { type: Boolean, default: true, },
+        globalWorkflowStatus: { type: String, default: 'running', enum: ['running','stopped','locked',] }
+    }, { timestamps: true })
+
     const ChargeSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
@@ -165,8 +174,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         },
         url: {
             method: { type: String, default: 'GET'},
-            url: { type: String, default: 'https://api.com'},
-            name: { type: String, default: 'API'},
+            url: { type: String, default: 'https://api.requestworkbox.com/'},
+            name: { type: String, default: 'Sample Request'},
         },
         query: {
             type: [ KeyValueSchema ],
@@ -274,6 +283,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
     return {
         'Usage': new mongoose.model('Usage', UsageSchema),
         'Billing': new mongoose.model('Billing', BillingSchema),
+        'Setting': new mongoose.model('Setting', SettingSchema),
         'Feedback': new mongoose.model('Feedback', FeedbackSchema),
         'Storage': new mongoose.model('Storage', StorageSchema),
         'Project': new mongoose.model('Project', ProjectSchema),
