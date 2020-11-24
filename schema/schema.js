@@ -26,6 +26,13 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         }
     }
 
+    const TokenSchema = new mongoose.Schema({
+        active: { type: Boolean, default: true, required: true  },
+        sub: { type: String, required: true },
+        snippet: { type: String, required: true },
+        hash: { type: String, required: true },
+    }, { timestamps: true })
+
     const QueueSchema = new mongoose.Schema({
         active: { type: Boolean, default: true, required: true  },
         sub: { type: String, required: true },
@@ -281,6 +288,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
     }, { timestamps: true })
 
     return {
+        'Token': new mongoose.model('Token', TokenSchema),
         'Usage': new mongoose.model('Usage', UsageSchema),
         'Billing': new mongoose.model('Billing', BillingSchema),
         'Setting': new mongoose.model('Setting', SettingSchema),
