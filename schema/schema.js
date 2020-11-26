@@ -84,6 +84,10 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         scheduleWorkflowCount: { type: Number },
 
         stripeCustomerId: { type: String },
+        stripeCardBrand: { type: String },
+        stripeCardMonth: { type: String },
+        stripeCardYear: { type: String },
+        stripeCardLast4: { type: String },
     }, { timestamps: true })
 
     const SettingSchema = new mongoose.Schema({
