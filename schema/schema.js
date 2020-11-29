@@ -51,24 +51,6 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         }],
     }, { timestamps: true })
 
-    const QueueDevSchema = new mongoose.Schema({
-        active: { type: Boolean, default: true, required: true  },
-        sub: { type: String, required: true },
-        instance: { type: Schema.Types.ObjectId, required: true  },
-        workflow: { type: Schema.Types.ObjectId, required: true  },
-        workflowName: { type: String, required: true  },
-        status: { type: String, enum: queueStatusValue },
-        queueType: { type: String, enum: ['queue', 'schedule', 'return'] },
-        date: { type: Date, },
-        storage: { type: String  },
-        dev: { type: Boolean, default: true, required: true },
-        stats: [{
-            type: Schema.Types.ObjectId,
-            ref: 'QueueStat',
-            autopopulate: true
-        }],
-    }, { timestamps: true })
-
     const BillingSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
@@ -304,16 +286,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         'Instance': new mongoose.model('Instance', InstanceSchema),
         'Stat': new mongoose.model('Stat', StatSchema),
         'QueueStat': new mongoose.model('QueueStat', QueueStatSchema),
-
-        'Queue': (() => {
-            if (nodeEnv === 'production') {
-                return new mongoose.model('Queue', QueueSchema)
-            } else if (nodeEnv === 'development') {
-                return new mongoose.model('QueueDev', QueueDevSchema)
-            } else {
-                throw new Error('Missing node env')
-            }
-        })(),
+        'Queue': new mongoose.model('Queue', QueueSchema),
 
         'RequestSchema': RequestSchema,
     }

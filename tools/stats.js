@@ -92,7 +92,7 @@ const
                     socketService.io.emit(queue.sub, { queueDoc: queue, })
                 })
             },
-            updateInstanceStats: async function(payload, IndexSchema, S3) {
+            updateInstanceStats: async function(payload, IndexSchema, S3, STORAGE_BUCKET) {
                 const { instance, statConfig, } = payload
     
                 // Create Instance Stat
@@ -107,7 +107,7 @@ const
                 // S3 Stat
                 const statBackup = _.assign(statConfig, {_id: instanceStat._id})
                 await S3.upload({
-                    Bucket: "connector-storage",
+                    Bucket: STORAGE_BUCKET,
                     Key: `${instance.sub}/instance-statistics/${statBackup.instance}/${statBackup._id}`,
                     Body: JSON.stringify(statBackup)
                 }).promise()
