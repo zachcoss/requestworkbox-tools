@@ -75,9 +75,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
     const SettingSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
-        emailPromotions: { type: Boolean, default: true, },
-        emailProducts: { type: Boolean, default: true, },
-        emailSystemUpdates: { type: Boolean, default: true, },
+        emailPromotions: { type: Boolean, default: false, },
+        emailProducts: { type: Boolean, default: false, },
+        emailSystemUpdates: { type: Boolean, default: false, },
         globalWorkflowStatus: { type: String, default: 'running', enum: ['running','stopped','locked',] }
     }, { timestamps: true })
 
