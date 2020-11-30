@@ -43,7 +43,6 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         queueType: { type: String, enum: ['queue', 'schedule', 'return'] },
         date: { type: Date, },
         storage: { type: String  },
-        dev: { type: Boolean, default: false, required: true },
         stats: [{
             type: Schema.Types.ObjectId,
             ref: 'QueueStat',
