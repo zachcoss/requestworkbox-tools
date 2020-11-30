@@ -116,6 +116,29 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         usageDetail: { type: String },
     }, { timestamps: true })
 
+    const UsageDaySchema = new mongoose.Schema({
+        active: { type: Boolean, default: true },
+        sub: { type: String, required: true },
+
+        // only includes information from instance usage schema
+        // (not storage schema)
+        hours: {
+            type: [new mongoose.Schema({
+                start: { type: Date },
+                end: { type: Date },
+                totalBytesDown: { type: Number },
+                totalBytesUp: { type: Number },
+                totalMs: { type: Number },
+            })],
+        },
+
+        start: { type: Date },
+        end: { type: Date },
+        totalBytesDown: { type: Number },
+        totalBytesUp: { type: Number },
+        totalMs: { type: Number },
+    }, { timestamps: true })
+
     const FeedbackSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
@@ -275,6 +298,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
     return {
         'Token': new mongoose.model('Token', TokenSchema),
         'Usage': new mongoose.model('Usage', UsageSchema),
+        'UsageDay': new mongoose.model('UsageDay', UsageDaySchema),
         'Billing': new mongoose.model('Billing', BillingSchema),
         'Setting': new mongoose.model('Setting', SettingSchema),
         'Feedback': new mongoose.model('Feedback', FeedbackSchema),
