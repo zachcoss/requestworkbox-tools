@@ -69,6 +69,10 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         stripeCardMonth: { type: String },
         stripeCardYear: { type: String },
         stripeCardLast4: { type: String },
+
+        stripeCurrentPeriodStart: { type: Date },
+        stripeCurrentPeriodEnd: { type: Date },
+        stripeSubscriptionId: { type: String },
     }, { timestamps: true })
 
     const SettingSchema = new mongoose.Schema({
