@@ -193,7 +193,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         },
         url: {
             method: { type: String, default: 'GET'},
-            url: { type: String, default: 'https://api.requestworkbox.com/'},
+            url: { type: String, default: 'https://api.requestworkbox.com'},
             name: { type: String, default: 'Sample Request'},
         },
         query: {
@@ -227,6 +227,23 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             default: [{}],
         },
         webhookRequestId: { type: Schema.Types.ObjectId, },
+    }, { timestamps: true })
+
+    const StatuscheckSchema = new mongoose.Schema({
+        active: { type: Boolean, default: true },
+        sub: { type: String, required: true },
+        projectId: { type: Schema.Types.ObjectId, required: true, },
+        workflowId: { type: Schema.Types.ObjectId, required: true, },
+
+        results: { type: mongoose.Schema.Types.Mixed },
+        lastResult: { type: Date },
+        lastResultQueueId: { type: Schema.Types.ObjectId, },
+        nextQueueId: { type: Schema.Types.ObjectId, },
+
+        status: { type: String, default: 'stopped', enum: ['stopped','running'] },
+        onWorkflowTaskError: { type: String, default: 'continue', enum: ['continue','exit'] },
+        sendWorkflowWebhook: { type: String, default: 'always', enum: ['onError','onSuccess', 'always', 'never'] },
+        interval: { type: Number, default: 60, enum: [ 15, 30, 60 ] },
     }, { timestamps: true })
 
     const InstanceSchema = new mongoose.Schema({
@@ -310,6 +327,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         'Project': new mongoose.model('Project', ProjectSchema),
         'Request': new mongoose.model('Request', RequestSchema),
         'Workflow': new mongoose.model('Workflow', WorkflowSchema),
+        'Statuscheck': new mongoose.model('Statuscheck', StatuscheckSchema),
         'Instance': new mongoose.model('Instance', InstanceSchema),
         'Stat': new mongoose.model('Stat', StatSchema),
         'QueueStat': new mongoose.model('QueueStat', QueueStatSchema),
