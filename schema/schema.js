@@ -246,6 +246,13 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         interval: { type: Number, default: 60, enum: [ 15, 30, 60 ] },
     }, { timestamps: true })
 
+    const WebhookSchema = new mongoose.Schema({
+        active: { type: Boolean, default: true },
+        sub: { type: String, required: true },
+        projectId: { type: Schema.Types.ObjectId, required: true, },
+        name: { type: String, default: 'Untitled Webhook' },
+    }, { timestamps: true })
+
     const InstanceSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
@@ -328,6 +335,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         'Request': new mongoose.model('Request', RequestSchema),
         'Workflow': new mongoose.model('Workflow', WorkflowSchema),
         'Statuscheck': new mongoose.model('Statuscheck', StatuscheckSchema),
+        'Webhook': new mongoose.model('Webhook', WebhookSchema),
         'Instance': new mongoose.model('Instance', InstanceSchema),
         'Stat': new mongoose.model('Stat', StatSchema),
         'QueueStat': new mongoose.model('QueueStat', QueueStatSchema),
