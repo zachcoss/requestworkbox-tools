@@ -99,15 +99,6 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         invoiceLastCalculated: { type: Date, },
     }, { timestamps: true })
 
-    const InvoiceSchema = new mongoose.Schema({
-        active: { type: Boolean, default: true },
-        sub: { type: String, required: true },
-        status: { type: String, enum: ['ready','calculating','error'] },
-        charges: {
-            type: [ ChargeSchema ],
-        },
-    }, { timestamps: true })
-
     const UsageSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
@@ -262,6 +253,14 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         payloadSize: { type: Number },
         payloadType: { type: String },
         id: { type: String },
+        usage: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Usage',
+            autopopulate: true
+        }],
+        totalBytesDown: { type: Number },
+        totalBytesUp: { type: Number },
+        totalMs: { type: Number },
     }, { timestamps: true })
 
     const InstanceSchema = new mongoose.Schema({

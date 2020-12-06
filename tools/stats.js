@@ -150,5 +150,24 @@ const
                 
                 await storage.save()
             },
+            updateWebhookDetailUsage: async function(payload, IndexSchema) {
+                const { webhookDetail, usages } = payload
+
+                // Batch Create Usage
+                const bulkUsages = _.map(usages, (usage) => {
+                    const usageStat = new IndexSchema.Usage(usage)
+                    return usageStat
+                })
+
+                // Insert many queue stat
+                const insertMany = await IndexSchema.Usage.insertMany(bulkUsages)
+
+                // Add to Storage
+                _.each(insertMany, (usage) => {
+                    updateUsageAndTotals(webhookDetail, usage)
+                })
+                
+                await webhookDetail.save()
+            },
         }
     }
