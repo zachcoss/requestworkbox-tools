@@ -38,9 +38,10 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         sub: { type: String, required: true },
         instance: { type: Schema.Types.ObjectId, required: true  },
         workflow: { type: Schema.Types.ObjectId, required: true  },
+        statuscheckId: { type: Schema.Types.ObjectId,  },
         workflowName: { type: String, required: true  },
         status: { type: String, enum: queueStatusValue },
-        queueType: { type: String, enum: ['queue', 'schedule', 'return'] },
+        queueType: { type: String, enum: ['queue', 'schedule', 'return', 'statuscheck'] },
         date: { type: Date, },
         storage: { type: String  },
         stats: [{
@@ -63,6 +64,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         // schedule workflow
         scheduleWorkflowLast: { type: Date },
         scheduleWorkflowCount: { type: Number },
+        // statuscheck workflow
+        statuscheckWorkflowLast: { type: Date },
+        statuscheckWorkflowCount: { type: Number },
 
         stripeCustomerId: { type: String },
         stripeCardBrand: { type: String },
@@ -226,10 +230,10 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         projectId: { type: Schema.Types.ObjectId, required: true, },
         workflowId: { type: Schema.Types.ObjectId, required: true, },
 
-        results: { type: mongoose.Schema.Types.Mixed },
-        lastResult: { type: Date },
-        lastResultQueueId: { type: Schema.Types.ObjectId, },
+        lastInstanceResults: { type: mongoose.Schema.Types.Mixed },
+        lastInstanceId: { type: Schema.Types.ObjectId, },
         nextQueueId: { type: Schema.Types.ObjectId, },
+        nextQueueDate: { type: Date, },
 
         status: { type: String, default: 'stopped', enum: ['stopped','running'] },
         onWorkflowTaskError: { type: String, default: 'continue', enum: ['continue','exit'] },
@@ -290,6 +294,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         totalBytesDown: { type: Number },
         totalBytesUp: { type: Number },
         totalMs: { type: Number },
+
+        queueId: { type: Schema.Types.ObjectId, },
+        queueType: { type: String, enum: ['queue', 'schedule', 'return', 'statuscheck'] },
     }, { timestamps: true })
 
     const StatSchema = new mongoose.Schema({

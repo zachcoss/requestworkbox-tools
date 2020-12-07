@@ -92,7 +92,7 @@ const
                     socketService.io.emit(queue.sub, { queueDoc: queue, })
                 })
             },
-            updateInstanceStats: async function(payload, IndexSchema, S3, STORAGE_BUCKET) {
+            updateInstanceStats: async function(payload, IndexSchema, S3, STORAGE_BUCKET, socketService, statuscheck) {
                 const { instance, statConfig, } = payload
     
                 // Create Instance Stat
@@ -111,6 +111,13 @@ const
                     Key: `${instance.sub}/instance-statistics/${statBackup.instance}/${statBackup._id}`,
                     Body: JSON.stringify(statBackup)
                 }).promise()
+
+                if (statuscheck && statuscheck._id) {
+                    statuscheck.lastInstanceId = instance._id
+                    await statuscheck.save()
+                    
+                    socketService.io.emit(instance.sub, { instanceDoc: instance, })
+                }
             },
             updateInstanceUsage: async function(payload, IndexSchema) {
                 const { instance, usages } = payload
