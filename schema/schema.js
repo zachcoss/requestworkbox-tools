@@ -149,11 +149,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
         name: { type: String, required: true, default: 'Untitled Storage' },
-        project: {
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: 'Project',
-        },
+        projectId: { type: Schema.Types.ObjectId, required: true },
         storageType: { type: String, enum: ['text', 'file'] },
         fieldname: { type: String, },
         originalname: { type: String, },
@@ -181,11 +177,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
     const RequestSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
-        project: {
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: 'Project',
-        },
+        projectId: { type: Schema.Types.ObjectId, required: true },
         method: { type: String, default: 'GET', required: true, enum: ['GET','POST','get','post'] },
         url: { type: String, default: 'https://api.requestworkbox.com' },
         name: { type: String, default: 'Sample Request'},
@@ -207,11 +199,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
         name: { type: String, default: 'Untitled Workflow' },
-        project: {
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: 'Project',
-        },
+        projectId: { type: Schema.Types.ObjectId, required: true },
         
         tasks: {
             type: [new mongoose.Schema({
@@ -268,11 +256,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
     const InstanceSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
-        project: {
-            type: Schema.Types.ObjectId,
-            required: true,
-            ref: 'Project',
-        },
+        projectId: { type: Schema.Types.ObjectId, required: true },
         workflow: {
             type: Schema.Types.ObjectId,
             required: true,
