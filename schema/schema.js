@@ -186,11 +186,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             required: true,
             ref: 'Project',
         },
-        url: {
-            method: { type: String, default: 'GET'},
-            url: { type: String, default: 'https://api.requestworkbox.com'},
-            name: { type: String, default: 'Sample Request'},
-        },
+        method: { type: String, default: 'GET', required: true, enum: ['GET','POST','get','post'] },
+        url: { type: String, default: 'https://api.requestworkbox.com' },
+        name: { type: String, default: 'Sample Request'},
         query: {
             type: [ KeyValueSchema ],
             default: [ KeyValueDefault() ]
