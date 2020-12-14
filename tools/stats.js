@@ -26,8 +26,8 @@ const
                 const queueStat = new IndexSchema.QueueStat({
                     active: true,
                     sub: queue.sub,
-                    instance: queue.instance,
-                    queue: queue._id,
+                    instanceId: queue.instanceId,
+                    queueId: queue._id,
                     status: status,
                     statusText: statusText || '',
                     error: error || false,
@@ -52,8 +52,8 @@ const
                     const queueStat = new IndexSchema.QueueStat({
                         active: true,
                         sub: queue.sub,
-                        instance: queue.instance,
-                        queue: queue._id,
+                        instanceId: queue.instanceId,
+                        queueId: queue._id,
                         status: status,
                         statusText: statusText || '',
                         error: error || false,
@@ -68,7 +68,7 @@ const
                 const bulkQueueUpdates = _.map(insertMany, (queueStat) => {
                     return {
                         updateOne: {
-                            filter: { _id: queueStat.queue },
+                            filter: { _id: queueStat.queueId },
                             update: {
                                 $set : { status : queueStat.status },
                                 $push: { stats: queueStat._id },
@@ -83,7 +83,7 @@ const
                 // Generate artificial clone of queue doc for socket
                 _.each(queueDocs, (queue) => {
                     const queueStat = _.filter(bulkQueueStats, (queueStat) => {
-                        if (queueStat.queue === queue._id) return true
+                        if (queueStat.queueId === queue._id) return true
                         else return false
                     })[0]
     
@@ -108,7 +108,7 @@ const
                 const statBackup = _.assign(statConfig, {_id: instanceStat._id})
                 await S3.upload({
                     Bucket: STORAGE_BUCKET,
-                    Key: `${instance.sub}/instance-statistics/${statBackup.instance}/${statBackup._id}`,
+                    Key: `${instance.sub}/instance-statistics/${statBackup.instanceId}/${statBackup._id}`,
                     Body: JSON.stringify(statBackup)
                 }).promise()
 
