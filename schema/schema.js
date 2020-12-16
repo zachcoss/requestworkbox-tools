@@ -189,6 +189,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         tasks: {
             type: [new mongoose.Schema({
                 requestId: Schema.Types.ObjectId,
+                runtimeResultName: { type: String, default: '', },
             })],
             default: [{}],
         },
