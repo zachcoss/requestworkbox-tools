@@ -192,7 +192,20 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             })],
             default: [{}],
         },
-        webhookRequestId: { type: Schema.Types.ObjectId, },
+
+        payloads: {
+            type: [new mongoose.Schema({
+                requestId: Schema.Types.ObjectId,
+            })],
+            default: [{}],
+        },
+
+        webhooks: {
+            type: [new mongoose.Schema({
+                requestId: Schema.Types.ObjectId,
+            })],
+            default: [{}],
+        },
     }, { timestamps: true })
 
     const StatuscheckSchema = new mongoose.Schema({
@@ -265,6 +278,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
     const StatSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         instanceId: { type: Schema.Types.ObjectId, required: true },
+        taskId: { type: Schema.Types.ObjectId, required: true },
+        taskField: { type: String, required: true, enum: ['payloads','tasks','webhooks'] },
         requestName: { type: String },
         status: { type: Number },
         statusText: { type: String },
