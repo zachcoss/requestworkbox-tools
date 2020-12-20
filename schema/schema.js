@@ -10,9 +10,12 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
     mongoose.plugin(mongooseAutoPopulate)
 
+    // Queue Status Values
     const queueStatusValue = ['received', 'uploading', 'pending', 'queued', 'starting', 'initializing', 'loading', 'running', 'webhook', 'complete', 'error', 'archived']
 
+    // Key Value Schema
     const KeyValueSchema = new mongoose.Schema({
+        active: Boolean,
         key: String,
         value: String,
         valueType: { type: String, enum: ['textInput','storage','runtimeResult','incomingField'] }
@@ -20,27 +23,10 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
     const KeyValueDefault = () => {
         return {
+            active: false,
             key: '',
             value: '',
             valueType: 'textInput'
-        }
-    }
-
-    const projectPermissionsValues = ['owner','team','public']
-    const ProjectPermissionsSchema = new mongoose.Schema({
-        returnWorkflow: { type: String, required: true, default: 'owner', enum: projectPermissionsValues },
-        queueWorkflow: { type: String, required: true, default: 'owner', enum: projectPermissionsValues },
-        scheduleWorkflow: { type: String, required: true, default: 'owner', enum: projectPermissionsValues },
-        statuscheckWorkflow: { type: String, required: true, default: 'owner', enum: projectPermissionsValues },
-        webhookEndpoint: { type: String, required: true, default: 'owner', enum: projectPermissionsValues },
-    })
-    const ProjectPermissionsDefault = function() {
-        return {
-            returnWorkflow: 'owner',
-            queueWorkflow: 'owner',
-            scheduleWorkflow: 'owner',
-            statuscheckWorkflow: 'owner',
-            webhookEndpoint: 'owner',
         }
     }
 
@@ -100,10 +86,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
     const SettingSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
-        emailPromotions: { type: Boolean, default: false, },
-        emailProducts: { type: Boolean, default: false, },
-        emailSystemUpdates: { type: Boolean, default: false, },
-        globalWorkflowStatus: { type: String, default: 'running', enum: ['running','stopped','locked',] }
+        username: { type: String, required: true },
+        globalWorkflowStatus: { type: String, default: 'running', enum: ['running','stopped','locked',] },
     }, { timestamps: true })
 
     const UsageSchema = new mongoose.Schema({
@@ -169,46 +153,36 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         totalBytesDown: { type: Number },
         totalBytesUp: { type: Number },
         totalMs: { type: Number },
+
+        lockedResource: { type: Boolean, required: true, default: false, },
+        sensitiveData: { type: Boolean, required: true, default: false, },
     }, { timestamps: true })
 
-    const SubSchema = new mongoose.Schema({
-        active: { type: Boolean, default: true },
-        sub: { type: String, required: true },
-
-        projects: [{
-            type: Schema.Types.ObjectId,
-            ref: 'Member',
-            autopopulate: true
-        }],
-    }, { timestamps: true })
+    const ProjectPermissionsValues = ['owner','team','public']
 
     const ProjectSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
         name: { type: String, required: true, default: 'Untitled Project' },
-        permissions: {
-            type: ProjectPermissionsSchema,
-            default: ProjectPermissionsDefault(),
-        },
-        team: [{
-            type: Schema.Types.ObjectId,
-            ref: 'Member',
-            autopopulate: true
-        }],
+
+        returnWorkflow: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
+        queueWorkflow: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
+        scheduleWorkflow: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
+        statuscheckWorkflow: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
+        webhookEndpoint: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
     }, { timestamps: true })
 
     const MemberSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
-        username: { type: String, required: true },
         owner: { type: Boolean, required: true, default: false, },
+        username: { type: String, required: true },
 
         status: { type: String, required: true, default: 'invited', enum: ['invited','accepted'] },
         permission: { type: String, required: true, default: 'read', enum: ['read','write'] },
         includeSensitive: { type: Boolean, required: true, default: false, },
 
-        projectId: Schema.Types.ObjectId,
-        projectName: String,
+        projectId: { type: Schema.Types.ObjectId, required: true, },
     }, { timestamps: true })
 
     const RequestSchema = new mongoose.Schema({
@@ -218,8 +192,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         method: { type: String, default: 'GET', required: true, enum: ['GET','POST','get','post'] },
         url: { type: String, default: 'https://api.requestworkbox.com' },
         name: { type: String, default: 'Sample Request' },
-        authorizationType: { type: String, required: true, enum: ['noAuth','apiKey','bearerToken','basicAuth'] },
-        authorization: { type: mongoose.Schema.Types.Mixed },
+        authorizationType: { type: String, required: true, default: 'noAuth', enum: ['noAuth','apiKey','bearerToken','basicAuth'] },
+        authorization: { type: mongoose.Schema.Types.Mixed, required: true, default: {}, },
         query: {
             type: [ KeyValueSchema ],
             default: [ KeyValueDefault() ]
@@ -232,6 +206,11 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             type: [ KeyValueSchema ],
             default: [ KeyValueDefault() ]
         },
+
+        lockedResource: { type: Boolean, required: true, default: false, },
+        preventExecution: { type: Boolean, required: true, default: false, },
+        sensitiveResponse: { type: Boolean, required: true, default: false, },
+        healthcheckEndpoint: { type: Boolean, required: true, default: false, },
     }, { timestamps: true })
 
     const WorkflowSchema = new mongoose.Schema({
@@ -242,6 +221,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         
         tasks: {
             type: [new mongoose.Schema({
+                run: Boolean,
                 requestId: Schema.Types.ObjectId,
                 runtimeResultName: { type: String, default: '', },
             })],
@@ -250,6 +230,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
         payloads: {
             type: [new mongoose.Schema({
+                run: Boolean,
                 requestId: Schema.Types.ObjectId,
             })],
             default: [{}],
@@ -257,10 +238,13 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
         webhooks: {
             type: [new mongoose.Schema({
+                run: Boolean,
                 requestId: Schema.Types.ObjectId,
             })],
             default: [{}],
         },
+
+        lockedResource: { type: Boolean, required: true, default: false, },
     }, { timestamps: true })
 
     const StatuscheckSchema = new mongoose.Schema({
@@ -369,7 +353,6 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         'Setting': new mongoose.model('Setting', SettingSchema),
         'Feedback': new mongoose.model('Feedback', FeedbackSchema),
         'Storage': new mongoose.model('Storage', StorageSchema),
-        'Sub': new mongoose.model('Sub', SubSchema),
         'Project': new mongoose.model('Project', ProjectSchema),
         'Member': new mongoose.model('Member', MemberSchema),
         'Request': new mongoose.model('Request', RequestSchema),
