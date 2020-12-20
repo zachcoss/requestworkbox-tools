@@ -26,6 +26,24 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         }
     }
 
+    const projectPermissionsValues = ['owner','team','public']
+    const ProjectPermissionsSchema = new mongoose.Schema({
+        returnWorkflow: { type: String, required: true, default: 'owner', enum: projectPermissionsValues },
+        queueWorkflow: { type: String, required: true, default: 'owner', enum: projectPermissionsValues },
+        scheduleWorkflow: { type: String, required: true, default: 'owner', enum: projectPermissionsValues },
+        statuscheckWorkflow: { type: String, required: true, default: 'owner', enum: projectPermissionsValues },
+        webhookEndpoint: { type: String, required: true, default: 'owner', enum: projectPermissionsValues },
+    })
+    const ProjectPermissionsDefault = function() {
+        return {
+            returnWorkflow: 'owner',
+            queueWorkflow: 'owner',
+            scheduleWorkflow: 'owner',
+            statuscheckWorkflow: 'owner',
+            webhookEndpoint: 'owner',
+        }
+    }
+
     const TokenSchema = new mongoose.Schema({
         active: { type: Boolean, default: true, required: true  },
         sub: { type: String, required: true },
@@ -153,10 +171,44 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         totalMs: { type: Number },
     }, { timestamps: true })
 
+    const SubSchema = new mongoose.Schema({
+        active: { type: Boolean, default: true },
+        sub: { type: String, required: true },
+
+        projects: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Member',
+            autopopulate: true
+        }],
+    }, { timestamps: true })
+
     const ProjectSchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
         name: { type: String, required: true, default: 'Untitled Project' },
+        permissions: {
+            type: ProjectPermissionsSchema,
+            default: ProjectPermissionsDefault(),
+        },
+        team: [{
+            type: Schema.Types.ObjectId,
+            ref: 'Member',
+            autopopulate: true
+        }],
+    }, { timestamps: true })
+
+    const MemberSchema = new mongoose.Schema({
+        active: { type: Boolean, default: true },
+        sub: { type: String, required: true },
+        username: { type: String, required: true },
+        owner: { type: Boolean, required: true, default: false, },
+
+        status: { type: String, required: true, default: 'invited', enum: ['invited','accepted'] },
+        permission: { type: String, required: true, default: 'read', enum: ['read','write'] },
+        includeSensitive: { type: Boolean, required: true, default: false, },
+
+        projectId: Schema.Types.ObjectId,
+        projectName: String,
     }, { timestamps: true })
 
     const RequestSchema = new mongoose.Schema({
@@ -165,7 +217,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         projectId: { type: Schema.Types.ObjectId, required: true },
         method: { type: String, default: 'GET', required: true, enum: ['GET','POST','get','post'] },
         url: { type: String, default: 'https://api.requestworkbox.com' },
-        name: { type: String, default: 'Sample Request'},
+        name: { type: String, default: 'Sample Request' },
+        authorizationType: { type: String, required: true, enum: ['noAuth','apiKey','bearerToken','basicAuth'] },
+        authorization: { type: mongoose.Schema.Types.Mixed },
         query: {
             type: [ KeyValueSchema ],
             default: [ KeyValueDefault() ]
@@ -315,7 +369,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         'Setting': new mongoose.model('Setting', SettingSchema),
         'Feedback': new mongoose.model('Feedback', FeedbackSchema),
         'Storage': new mongoose.model('Storage', StorageSchema),
+        'Sub': new mongoose.model('Sub', SubSchema),
         'Project': new mongoose.model('Project', ProjectSchema),
+        'Member': new mongoose.model('Member', MemberSchema),
         'Request': new mongoose.model('Request', RequestSchema),
         'Workflow': new mongoose.model('Workflow', WorkflowSchema),
         'Statuscheck': new mongoose.model('Statuscheck', StatuscheckSchema),
