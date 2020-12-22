@@ -92,7 +92,7 @@ const
                     socketService.io.emit(queue.sub, { queueDoc: queue, })
                 })
             },
-            updateInstanceStats: async function(payload, IndexSchema, S3, STORAGE_BUCKET, socketService, statuscheck) {
+            updateInstanceStats: async function(payload, IndexSchema, S3, STORAGE_BUCKET, socketService) {
                 const { instance, statConfig, } = payload
     
                 // Create Instance Stat
@@ -111,13 +111,6 @@ const
                     Key: `${instance.sub}/instance-statistics/${statBackup.instanceId}/${statBackup._id}`,
                     Body: JSON.stringify(statBackup)
                 }).promise()
-
-                if (statuscheck && statuscheck._id) {
-                    statuscheck.lastInstanceId = instance._id
-                    await statuscheck.save()
-                    
-                    socketService.io.emit(instance.sub, { instanceDoc: instance, })
-                }
             },
             updateInstanceUsage: async function(payload, IndexSchema) {
                 const { instance, usages } = payload
@@ -156,25 +149,6 @@ const
                 })
                 
                 await storage.save()
-            },
-            updateWebhookDetailUsage: async function(payload, IndexSchema) {
-                const { webhookDetail, usages } = payload
-
-                // Batch Create Usage
-                const bulkUsages = _.map(usages, (usage) => {
-                    const usageStat = new IndexSchema.Usage(usage)
-                    return usageStat
-                })
-
-                // Insert many queue stat
-                const insertMany = await IndexSchema.Usage.insertMany(bulkUsages)
-
-                // Add to Storage
-                _.each(insertMany, (usage) => {
-                    updateUsageAndTotals(webhookDetail, usage)
-                })
-                
-                await webhookDetail.save()
             },
         }
     }
