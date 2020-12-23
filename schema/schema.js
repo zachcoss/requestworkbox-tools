@@ -43,6 +43,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         instanceId: { type: Schema.Types.ObjectId, required: true },
         workflowId: { type: Schema.Types.ObjectId, required: true },
         workflowName: { type: String, required: true  },
+        workflowType: { type: String, required: true, default: 'workflow', enum: ['request','workflow',] },
+
         status: { type: String, enum: queueStatusValue },
         queueType: { type: String, enum: ['queue', 'schedule', 'return'] },
         date: { type: Date, },
@@ -53,6 +55,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             autopopulate: true
         }],
         ipAddress: { type: String },
+
+        publicUser: { type: Boolean, default: true, required: true  },
     }, { timestamps: true })
 
     const BillingSchema = new mongoose.Schema({
@@ -151,20 +155,20 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         sub: { type: String, required: true },
         name: { type: String, required: true, default: 'Untitled Project' },
 
-        returnWorkflow: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
-        queueWorkflow: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
-        scheduleWorkflow: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
-
         projectType: { type: String, required: true, default: 'free', enum: ['free','standard','developer','professional'] },
         globalWorkflowStatus: { type: String, required: true, default: 'running', enum: ['running','stopped','locked',] },
-        
-        returnWorkflowLast: { type: Date, required: true, default: new Date() },
-        queueWorkflowLast: { type: Date, required: true, default: new Date() },
-        scheduleWorkflowLast: { type: Date, required: true, default: new Date() },
 
-        returnWorkflowCount: { type: Number, required: true, default: 1 },
-        queueWorkflowCount: { type: Number, required: true, default: 1 },
-        scheduleWorkflowCount: { type: Number, required: true, default: 1 },
+        returnRequest: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
+        returnWorkflow: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
+
+        queueRequest: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
+        queueWorkflow: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
+
+        scheduleRequest: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
+        scheduleWorkflow: { type: String, required: true, default: 'owner', enum: ProjectPermissionsValues },
+
+        workflowCount: { type: Number, required: true, default: 0 },
+        workflowLast: { type: Date, required: true, default: new Date() },
     }, { timestamps: true })
 
     const MemberSchema = new mongoose.Schema({
@@ -173,8 +177,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         owner: { type: Boolean, required: true, default: false, },
         username: { type: String, required: true },
 
-        status: { type: String, required: true, default: 'invited', enum: ['invited','accepted'] },
-        permission: { type: String, required: true, default: 'read', enum: ['read','write'] },
+        status: { type: String, required: true, default: 'invited', enum: ['invited','accepted','removed'] },
+        permission: { type: String, required: true, default: 'read', enum: ['read','write','none'] },
         includeSensitive: { type: Boolean, required: true, default: false, },
 
         projectId: { type: Schema.Types.ObjectId, required: true, },
@@ -205,7 +209,6 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         lockedResource: { type: Boolean, required: true, default: false, },
         preventExecution: { type: Boolean, required: true, default: false, },
         sensitiveResponse: { type: Boolean, required: true, default: false, },
-        healthcheckEndpoint: { type: Boolean, required: true, default: false, },
     }, { timestamps: true })
 
     const WorkflowSchema = new mongoose.Schema({
@@ -213,6 +216,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         sub: { type: String, required: true },
         name: { type: String, default: 'Untitled Workflow' },
         projectId: { type: Schema.Types.ObjectId, required: true },
+        workflowType: { type: String, required: true, default: 'workflow', enum: ['request','workflow',] },
         
         tasks: {
             type: [new mongoose.Schema({
@@ -248,6 +252,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         projectId: { type: Schema.Types.ObjectId, required: true },
         workflowId: { type: Schema.Types.ObjectId, required: true },
         workflowName: { type: String },
+        workflowType: { type: String, required: true, default: 'workflow', enum: ['request','workflow',] },
+
         stats: [{
             type: Schema.Types.ObjectId,
             ref: 'Stat',
@@ -265,6 +271,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         queueId: { type: Schema.Types.ObjectId, },
         queueType: { type: String, enum: ['queue', 'schedule', 'return'] },
         ipAddress: { type: String },
+        publicUser: { type: Boolean, default: true, required: true  },
     }, { timestamps: true })
 
     const StatSchema = new mongoose.Schema({
