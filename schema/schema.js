@@ -145,7 +145,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         totalMs: { type: Number },
 
         lockedResource: { type: Boolean, required: true, default: false, },
-        sensitiveData: { type: Boolean, required: true, default: false, },
+        preventExecution: { type: Boolean, required: true, default: false, },
+        sensitiveResponse: { type: Boolean, required: true, default: false, },
     }, { timestamps: true })
 
     const ProjectPermissionsValues = ['owner','team','public']
@@ -244,6 +245,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         },
 
         lockedResource: { type: Boolean, required: true, default: false, },
+        preventExecution: { type: Boolean, required: true, default: false, },
     }, { timestamps: true })
 
     const InstanceSchema = new mongoose.Schema({
@@ -292,7 +294,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         requestSize: { type: Number },
         responseSize: { type: Number },
         responseType: { type: String }, 
-        error: { type: Boolean }
+        error: { type: Boolean },
+        sensitiveResponse: { type: Boolean, required: true, default: false, },
     }, { timestamps: true })
 
     const QueueStatSchema = new mongoose.Schema({
