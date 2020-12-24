@@ -30,6 +30,23 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         }
     }
 
+    // Key Value Authorization Schema
+     const KeyValueAuthorizationSchema = new mongoose.Schema({
+        active: Boolean,
+        key: String,
+        value: String,
+        valueType: { type: String, enum: ['textInput','storage','runtimeResult','incomingField'] }
+    })
+
+    const KeyValueAuthorizationDefault = () => {
+        return {
+            active: false,
+            key: '',
+            value: '',
+            valueType: 'textInput'
+        }
+    }
+
     const TokenSchema = new mongoose.Schema({
         active: { type: Boolean, default: true, required: true  },
         sub: { type: String, required: true },
@@ -192,8 +209,11 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         method: { type: String, default: 'GET', required: true, enum: ['GET','POST','get','post'] },
         url: { type: String, default: 'https://api.requestworkbox.com' },
         name: { type: String, default: 'Sample Request' },
-        authorizationType: { type: String, required: true, default: 'noAuth', enum: ['noAuth','apiKey','bearerToken','basicAuth'] },
-        authorization: { type: mongoose.Schema.Types.Mixed, required: true, default: {}, },
+        authorizationType: { type: String, required: true, default: 'noAuth', enum: ['noAuth','header','basicAuth'] },
+        authorization: {
+            type: [ KeyValueAuthorizationSchema ],
+            default: [ KeyValueAuthorizationDefault() ]
+        },
         query: {
             type: [ KeyValueSchema ],
             default: [ KeyValueDefault() ]
