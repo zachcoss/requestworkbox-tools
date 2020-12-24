@@ -23,24 +23,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
     const KeyValueDefault = () => {
         return {
-            active: false,
-            key: '',
-            value: '',
-            valueType: 'textInput'
-        }
-    }
-
-    // Key Value Authorization Schema
-     const KeyValueAuthorizationSchema = new mongoose.Schema({
-        active: Boolean,
-        key: String,
-        value: String,
-        valueType: { type: String, enum: ['textInput','storage','runtimeResult','incomingField'] }
-    })
-
-    const KeyValueAuthorizationDefault = () => {
-        return {
-            active: false,
+            active: true,
             key: '',
             value: '',
             valueType: 'textInput'
@@ -111,7 +94,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
     const UsageDaySchema = new mongoose.Schema({
         active: { type: Boolean, default: true },
-        sub: { type: String, required: true },
+        projectId: { type: Schema.Types.ObjectId, required: true },
 
         // only includes information from instance usage schema
         // (not storage schema)
@@ -119,17 +102,17 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
             type: [new mongoose.Schema({
                 start: { type: Date },
                 end: { type: Date },
-                totalBytesDown: { type: Number },
-                totalBytesUp: { type: Number },
-                totalMs: { type: Number },
+                totalBytesDown: { type: Number , required: true, default: 0 },
+                totalBytesUp: { type: Number , required: true, default: 0 },
+                totalMs: { type: Number , required: true, default: 0 },
             })],
         },
 
         start: { type: Date },
         end: { type: Date },
-        totalBytesDown: { type: Number },
-        totalBytesUp: { type: Number },
-        totalMs: { type: Number },
+        totalBytesDown: { type: Number, required: true, default: 0 },
+        totalBytesUp: { type: Number, required: true, default: 0 },
+        totalMs: { type: Number, required: true, default: 0 },
     }, { timestamps: true })
 
     const FeedbackSchema = new mongoose.Schema({
@@ -172,6 +155,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         active: { type: Boolean, required: true, default: true },
         sub: { type: String, required: true },
         name: { type: String, required: true, default: 'Untitled Project' },
+        owner: { type: Boolean, required: false, default: false },
 
         projectType: { type: String, required: true, default: 'free', enum: ['free','standard','developer','professional'] },
         globalWorkflowStatus: { type: String, required: true, default: 'running', enum: ['running','stopped','locked',] },
@@ -187,6 +171,10 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
         workflowCount: { type: Number, required: true, default: 0 },
         workflowLast: { type: Date, required: true, default: new Date() },
+
+        usage: { type: Number, required: true, default: 0 },
+        usageRemaining: { type: Number, required: true, default: 1000 },
+        usageTotal: { type: Number, required: true, default: 1000 },
     }, { timestamps: true })
 
     const MemberSchema = new mongoose.Schema({
@@ -194,6 +182,8 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         sub: { type: String, required: true },
         owner: { type: Boolean, required: true, default: false, },
         username: { type: String, required: true },
+        projectName: { type: String, required: false, default: '' },
+        projectUsername: { type: String, required: false, default: '' },
 
         status: { type: String, required: true, default: 'invited', enum: ['invited','accepted','removed'] },
         permission: { type: String, required: true, default: 'read', enum: ['read','write','none'] },
@@ -209,10 +199,10 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         method: { type: String, default: 'GET', required: true, enum: ['GET','POST','get','post'] },
         url: { type: String, default: 'https://api.requestworkbox.com' },
         name: { type: String, default: 'Sample Request' },
-        authorizationType: { type: String, required: true, default: 'noAuth', enum: ['noAuth','header','basicAuth'] },
+        authorizationType: { type: String, required: true, default: 'noAuth', enum: ['noAuth','basicAuth'] },
         authorization: {
-            type: [ KeyValueAuthorizationSchema ],
-            default: [ KeyValueAuthorizationDefault() ]
+            type: [ KeyValueSchema ],
+            default: [ KeyValueDefault() ]
         },
         query: {
             type: [ KeyValueSchema ],
@@ -241,7 +231,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         
         tasks: {
             type: [new mongoose.Schema({
-                run: Boolean,
+                active: Boolean,
                 requestId: Schema.Types.ObjectId,
                 runtimeResultName: { type: String, default: '', },
             })],
@@ -250,7 +240,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
         payloads: {
             type: [new mongoose.Schema({
-                run: Boolean,
+                active: Boolean,
                 requestId: Schema.Types.ObjectId,
             })],
             default: [{}],
@@ -258,7 +248,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
 
         webhooks: {
             type: [new mongoose.Schema({
-                run: Boolean,
+                active: Boolean,
                 requestId: Schema.Types.ObjectId,
             })],
             default: [{}],
