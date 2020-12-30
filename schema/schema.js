@@ -227,6 +227,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         sub: { type: String, required: true },
         name: { type: String, default: 'Untitled Workflow' },
         projectId: { type: Schema.Types.ObjectId, required: true },
+        requestId: { type: Schema.Types.ObjectId, required: false },
         workflowType: { type: String, required: true, default: 'workflow', enum: ['request','workflow',] },
         
         tasks: {
@@ -235,7 +236,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
                 requestId: Schema.Types.ObjectId,
                 runtimeResultName: { type: String, default: '', },
             })],
-            default: [{}],
+            default: [{
+                active: true,
+            }],
         },
 
         payloads: {
@@ -243,7 +246,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
                 active: Boolean,
                 requestId: Schema.Types.ObjectId,
             })],
-            default: [{}],
+            default: [{
+                active: true,
+            }],
         },
 
         webhooks: {
@@ -251,7 +256,9 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
                 active: Boolean,
                 requestId: Schema.Types.ObjectId,
             })],
-            default: [{}],
+            default: [{
+                active: true,
+            }],
         },
 
         lockedResource: { type: Boolean, required: true, default: false, },

@@ -108,7 +108,7 @@ const
                 const statBackup = _.assign(statConfig, {_id: instanceStat._id})
                 await S3.upload({
                     Bucket: STORAGE_BUCKET,
-                    Key: `${instance.sub}/instance-statistics/${statBackup.instanceId}/${statBackup._id}`,
+                    Key: `${instance.projectId}/instance-statistics/${instance._id}/${statBackup._id}`,
                     Body: JSON.stringify(statBackup)
                 }).promise()
             },
