@@ -44,6 +44,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         workflowId: { type: Schema.Types.ObjectId, required: true },
         workflowName: { type: String, required: true  },
         workflowType: { type: String, required: true, default: 'workflow', enum: ['request','workflow',] },
+        requestId: { type: Schema.Types.ObjectId, required: false },
 
         status: { type: String, enum: queueStatusValue },
         queueType: { type: String, enum: ['queue', 'schedule', 'return'] },
@@ -196,6 +197,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         active: { type: Boolean, default: true },
         sub: { type: String, required: true },
         projectId: { type: Schema.Types.ObjectId, required: true },
+        workflowId: { type: Schema.Types.ObjectId, required: false },
         method: { type: String, default: 'GET', required: true, enum: ['GET','POST','get','post'] },
         url: { type: String, default: 'https://api.requestworkbox.com' },
         name: { type: String, default: 'Sample Request' },
@@ -272,6 +274,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         workflowId: { type: Schema.Types.ObjectId, required: true },
         workflowName: { type: String },
         workflowType: { type: String, required: true, default: 'workflow', enum: ['request','workflow',] },
+        requestId: { type: Schema.Types.ObjectId, required: false },
 
         stats: [{
             type: Schema.Types.ObjectId,

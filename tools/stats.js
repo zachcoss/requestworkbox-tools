@@ -1,5 +1,9 @@
 const
-    _ = require('lodash');
+    _ = require('lodash'),
+    queueKeys = ['_id','active','status','stats','instanceId','workflowId','workflowName','storageInstanceId','queueType','date','createdAt','updatedAt'],
+    queueStatKeys = ['_id','active','status','statusText','error','instanceId','queueId','createdAt','updatedAt'],
+    instanceKeys = ['_id','active','projectId','workflowId','workflowName','queueType','queueId','stats','totalBytesDown','totalBytesUp','totalMs','createdAt','updatedAt'],
+    instanceStatKeys = ['_id','active','requestName','requestType','requestId','instanceId','status','statusText','startTime','endTime','duration','responseSize','taskId','taskField','createdAt','updatedAt'];
 
     function updateUsageAndTotals(assetDoc, usageDoc) {
         // Update usage
@@ -15,6 +19,32 @@ const
         } else if (usageDoc.usageMeasurement === 'ms') {
             assetDoc.totalMs = (assetDoc.totalMs || 0) + usageDoc.usageAmount
         }
+    }
+
+    function processQueueDoc(queueDoc) {
+        let queue = _.pickBy(queueDoc, function(value, key) {
+            return _.includes(queueKeys, key)
+        })
+        queue.stats = _.map(queue.stats, (stat) => {
+            const responseData = _.pickBy(stat, function(value, key) {
+                return _.includes(queueStatKeys, key)
+            })
+            return responseData
+        })
+        return queue
+    }
+
+    function processInstanceDoc(instanceDoc) {
+        let instance = _.pickBy(instanceDoc, function(value, key) {
+            return _.includes(instanceKeys, key)
+        })
+        instance.stats = _.map(instance.stats, (stat) => {
+            const responseData = _.pickBy(stat, function(value, key) {
+                return _.includes(instanceStatKeys, key)
+            })
+            return responseData
+        })
+        return instance
     }
 
     module.exports.init = function() {
@@ -41,7 +71,7 @@ const
                 // Save queue
                 await queue.save()
     
-                socketService.io.emit(queue.sub, { queueDoc: queue, })
+                socketService.io.emit(queue.sub, { queueDoc: processQueueDoc(queue.toJSON()), })
             },
             batchUpdateQueueStats: async function(payload, IndexSchema, socketService) {
                 const { queueDocs, status, statusText, error } = payload
@@ -89,7 +119,7 @@ const
     
                     queue.stats.push(queueStat)
                     queue.status = 'queued'
-                    socketService.io.emit(queue.sub, { queueDoc: queue, })
+                    socketService.io.emit(queue.sub, { queueDoc: processQueueDoc(queue.toJSON()), })
                 })
             },
             updateInstanceStats: async function(payload, IndexSchema, S3, STORAGE_BUCKET, socketService) {
@@ -111,6 +141,8 @@ const
                     Key: `${instance.projectId}/instance-statistics/${instance._id}/${statBackup._id}`,
                     Body: JSON.stringify(statBackup)
                 }).promise()
+
+                socketService.io.emit(instance.sub, { instanceDoc: processInstanceDoc(instance.toJSON()), })
             },
             updateInstanceUsage: async function(payload, IndexSchema) {
                 const { instance, usages } = payload
