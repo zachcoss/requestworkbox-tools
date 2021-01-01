@@ -328,6 +328,20 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         error: { type: Boolean }
     }, { timestamps: true })
 
+    const IntentSchema = new mongoose.Schema({
+        active: { type: Boolean, default: true },
+        sub: { type: String, required: true },
+        status: { type: String, enum: ['started','completed'], default: 'started' },
+        projectId: { type: Schema.Types.ObjectId, required: true },
+        intentType: { type: String, enum: ['upgrade','datatransfer'], required: true, },
+        
+        product: { type: String, enum: ['standard','developer','professional','gb'], required: true, },
+        price: { type: String, type: Number, required: true },
+
+        paymentIntentId: { type: String },
+        coupon: { type: String, },
+    }, { timestamps: true })
+
     return {
         'Token': new mongoose.model('Token', TokenSchema),
         'Usage': new mongoose.model('Usage', UsageSchema),
@@ -344,6 +358,7 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         'Stat': new mongoose.model('Stat', StatSchema),
         'QueueStat': new mongoose.model('QueueStat', QueueStatSchema),
         'Queue': new mongoose.model('Queue', QueueSchema),
+        'Intent': new mongoose.model('Intent', IntentSchema),
 
         'RequestSchema': RequestSchema,
     }
