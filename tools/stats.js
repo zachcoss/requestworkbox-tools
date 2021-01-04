@@ -1,8 +1,8 @@
 const
     _ = require('lodash'),
-    queueKeys = ['_id','active','status','stats','instanceId','workflowId','workflowName','storageInstanceId','queueType','date','createdAt','updatedAt'],
+    queueKeys = ['_id','active','status','stats','instanceId','workflowId','requestId','workflowName','storageInstanceId','queueType','date','createdAt','updatedAt'],
     queueStatKeys = ['_id','active','status','statusText','error','instanceId','queueId','createdAt','updatedAt'],
-    instanceKeys = ['_id','active','projectId','workflowId','workflowName','queueType','queueId','stats','totalBytesDown','totalBytesUp','totalMs','createdAt','updatedAt'],
+    instanceKeys = ['_id','active','projectId','workflowId','workflowName','requestId','queueType','queueId','stats','totalBytesDown','totalBytesUp','totalMs','createdAt','updatedAt'],
     instanceStatKeys = ['_id','active','requestName','requestType','requestId','instanceId','status','statusText','startTime','endTime','duration','responseSize','taskId','taskField','createdAt','updatedAt'];
 
     function updateUsageAndTotals(assetDoc, usageDoc) {
