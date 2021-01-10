@@ -135,11 +135,6 @@ module.exports = (mongoose, mongooseAutoPopulate, nodeEnv) => {
         mimetype: { type: String, },
         filename: { type: String, },
         size: { type: Number, },
-        usage: [{
-            type: Schema.Types.ObjectId,
-            ref: 'Usage',
-            autopopulate: true
-        }],
         storageValue: Schema.Types.Mixed,
         totalBytesDown: { type: Number },
         totalBytesUp: { type: Number },
